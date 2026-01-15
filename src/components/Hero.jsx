@@ -1,9 +1,11 @@
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/all";
 import gsap from 'gsap';
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
     const videoRef = useRef();
@@ -46,11 +48,37 @@ const Hero = () => {
 
         const startValue = isMobile ? 'top 50%' : 'center 60%';
         const endValue = isMobile ? '120% top': 'bottom top';
-    }, []);
+
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '#hero',
+                start: startValue,
+                end: endValue,
+                scrub: true,
+            }
+        }).from(videoRef.current, {
+            clipPath: 'polygon(33% 0, 67% 0, 67% 100%, 33% 100%)',
+        })
+    }, [isMobile]);
 
   return (
-    <>
-        <section id="hero" className="noisy">
+    <div className="relative">
+        <div className="video absolute inset-0 z-0">
+            <video
+                ref={videoRef}
+                src="/videos/input.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                className="w-full h-full object-cover"
+            />
+        </div>
+
+        <div className="noisy z-1 pointer-events-none"></div>
+
+        <section id="hero" className="relative z-10">
             <h1 className="title">MOJITO</h1>
 
             <img src="/images/hero-left-leaf.png" alt="left-leaf" className="left-leaf" />
@@ -71,16 +99,7 @@ const Hero = () => {
                 </div>
             </div>
         </section>
-
-        <div className="video absolute inset-0">
-            <video 
-                src="/videos/input.mp4" 
-                muted 
-                playsInline
-                preload="auto"
-            />
-        </div>
-    </>
+    </div>
   )
 }
 
